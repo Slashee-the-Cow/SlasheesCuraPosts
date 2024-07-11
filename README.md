@@ -7,7 +7,7 @@ To install a script, in Cura, open *Help > Show Configuration Folder*, open the 
 Sometimes things bother me. Maybe sometimes things bother you too. If that's the case, why shouldn't we both benefit from my overabundance of free time?
 ***
 ## So what's available?
-**[DeleteAddedTemperature](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/DeleteAddedTemperature/DeleteAddedTemperature.py?raw=True)**: A temporary workaround to fix a bug in Cura 5.7.2 which can add unwanted temperature instructions at the start of your gcode, depending on your printer's starting gcode.  
+**[DeleteAddedTemperature](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/DeleteAddedTemperature/DeleteAddedTemperature.zip)**: A temporary workaround to fix a bug in Cura 5.7.2 which can add unwanted temperature instructions at the start of your gcode, depending on your printer's starting gcode.  
 ***
 I don't usually get around to testing all of my scripts in new versions of Cura so if something isn't working click the "Issues" link up top and send me a friendly "hey genius, your stuff doesn't work" and I'll have a look at it.
 &NewLine;  
