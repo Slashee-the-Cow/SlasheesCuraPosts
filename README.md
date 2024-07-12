@@ -1,4 +1,4 @@
-# SlasheesCuraPosts
+# Slashee's Cura Posts
 ## *A selection of questionably useful Cura post processing scripts, for the refined slicer.*
 ### But how?
 To install a script, in Cura, open *Help > Show Configuration Folder*, open the *scripts* folder in there and drop in the .py file.
