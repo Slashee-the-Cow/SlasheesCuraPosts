@@ -1,4 +1,4 @@
-# Limit Support Acceleration: A script by Jessica Vache.... err I mean Slashee the Cow
+# Limit Support Acceleration: A script by Slashee the Cow
 # Because my new E3V3SE pulled supports out as it printed
 # That's _MY_ job
 
