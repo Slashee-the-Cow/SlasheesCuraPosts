@@ -8,6 +8,7 @@ Sometimes things bother me. Maybe sometimes things bother you too. If that's the
 ***
 ## So what's available?
 **[Delete Added Temperature](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/DeleteAddedTemperature/DeleteAddedTemperature.zip?raw=true)**: A temporary workaround to fix a bug in Cura 5.7.2 which can add unwanted temperature instructions at the start of your gcode, depending on your printer's starting gcode.  
+**[Disable Support Retraction](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/DisableSupportRetraction/DisableSupportRetraction.zip?raw=true)**: This one was an audience request. Deletes all retractions while printing support or support interface.  
 **[Limit Support Acceleration](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/LimitSupportAcceleration/LimitSupportAcceleration.zip?raw=true)**: Allows you to set the acceleration for support sections *and* the travels before and after. I know Cura lets you set the acceleration for support sections individually, but I've been burned by support being pulled and warped as the head moves off at travel speed.
 ***
 I don't usually get around to testing all of my scripts in new versions of Cura so if something isn't working click the "Issues" link up top and send me a friendly "hey genius, your stuff doesn't work" and I'll have a look at it.
