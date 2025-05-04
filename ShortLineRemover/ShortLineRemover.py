@@ -1,10 +1,11 @@
 # Short Line Remover
-# Written by Slashee the Cow, replicating a function created be Jhaonor.
+# Written by Slashee the Cow, replicating a function created by Jhaonor.
 
 import math
 
 from ..Script import Script
 from UM.Application import Application
+from UM.Logger import Logger
 
 class ShortLineRemover(Script):
     def __init__(self):
@@ -30,18 +31,13 @@ class ShortLineRemover(Script):
                 }
             }
         }"""
-
-    def is_there_another_g0(self, remaining_layer: list[str]) -> bool:
-        for line in remaining_layer:
-            if line.startswith("G0"):
-                return True
-        return False
     
     def execute(self, data):
+
         max_delete_length: float = float(self.getSettingValueByKey("max_length"))
         previous_coords: tuple[float, float, float] = (None, None, None)
-
-        def update_previous_coords(line, prev_coords = previous_coords):
+        
+        def update_previous_coords(line: str, prev_coords: tuple[float, float, float] = previous_coords) -> tuple[float, float, float]:
             new_x = self.getValue(line, "X")
             new_y = self.getValue(line, "Y")
             new_z = self.getValue(line, "Z")
@@ -50,9 +46,15 @@ class ShortLineRemover(Script):
                 new_y if new_y is not None else prev_coords[1],
                 new_z if new_z is not None else prev_coords[2])
 
+        def parse_coords(line: str) -> tuple[float, float, float]:
+            x = self.getValue(line, "X")
+            y = self.getValue(line, "Y")
+            z = self.getValue(line, "Z")
+            return x, y, z
+
         remove_section: bool = False
-        section_keep: list[str] = []
-        section_remove: list[str] = []
+        section_whole: list[str] = []
+        section_nomoves: list[str] = []
         section_length: float = 0.0
         start_z: float = None
         last_z: float = None
@@ -65,27 +67,29 @@ class ShortLineRemover(Script):
             new_lines: list[str] = []
             layer_lines = layer.splitlines()
             layer_finished = False  # Make sure to include everything after the last G0
+            #Logger.log("d", f"layer_index: {layer_index}")
             
             for line_index, line in enumerate(layer_lines):
+                #Logger.log("d", f"line_index: {line_index}, line: {line}")
                 if layer_finished:
                     new_lines.append(line)
                     continue
 
                 if line.startswith("G0"):
-                    # Sections end on travel moves
+                    # Sections end on travel moves, figure out if it needs to be removed
                     if remove_section:
                         # This sections's gotta go
-                        new_lines.extend(section_remove)
+                        new_lines.extend(section_nomoves)
                     else:
-                        new_lines.extend(section_keep)
+                        new_lines.extend(section_whole)
                     remove_section = False
-                    section_keep.clear()
-                    section_remove.clear()
+                    section_whole.clear()
+                    section_nomoves.clear()
                     section_length = 0.0
 
                 # Start a section on a G0 with Z
                 if line.startswith("G0") and "Z" in line:
-                    section_keep.append(line)
+                    section_whole.append(line)
                     previous_coords = update_previous_coords(line, previous_coords)
                     start_z = previous_coords[2]
                     section_length = 0.0
@@ -93,55 +97,46 @@ class ShortLineRemover(Script):
                     last_z = None
 
                 # Care about a G1 only if it's had a G0 with Z before it
-                elif line.startswith("G1") and len(section_keep) > 0:
-                    coords = (self.getValue(line, "X"), self.getValue(line, "Y"), self.getValue(line, "Z"))
+                elif line.startswith("G1") and section_whole:
+                    coords = parse_coords(line)
                     if coords[0] is not None and coords[1] is not None:
-                        if previous_coords[0] is not None and \
-                            previous_coords[1] is not None:
-                            section_length += math.dist(previous_coords, coords)
+                        if previous_coords and coords:
+                            try:
+                                section_length += math.dist(previous_coords[:2], coords[:2])
+                            except TypeError:
+                                Logger.log("w", f"Distance calculation failed on coords {coords} and previous_coords {previous_coords}")
                         previous_coords = update_previous_coords(line, previous_coords)
                     if coords[2] is not None:
                         if start_z is not None and coords[2] < start_z:
                             z_moved_down = True
                         last_z = coords[2]
-                    section_keep.append(line)
+                    section_whole.append(line)
 
                 else:
                     # Other lines get kept regardless
-                    if len(section_keep) > 0:
-                        section_remove.append(line)
-                        section_keep.append(line)
+                    if section_whole:
+                        section_nomoves.append(line)
+                        section_whole.append(line)
                     else:
                         new_lines.append(line)
 
-                # Check to see if we're about to hit a movement or end of layer and end things
-                final_g0 = False
-                if line_index + 1 < len(layer_lines) \
-                    and layer_lines[line_index + 1].startswith("G0"):
-                    if line_index + 2 < len(layer_lines):
-                        final_g0 = self.is_there_another_g0(layer_lines[line_index + 2:])
-                        if not final_g0:
-                            remove_section = section_length < max_delete_length
-                    else:  # End of the layer
-                        final_g0 = True
-
-                if not final_g0:
-                    # Do a proper check to see if we've gone down
-                    if z_moved_down and start_z is not None \
+                # Check to see if next line is G0 or end of layer
+                if (line_index + 1 < len(layer_lines) and layer_lines[line_index + 1].startswith("G0")) \
+                    or (line_index == len(layer_lines) - 1):
+                    if start_z is not None and z_moved_down \
                         and last_z is not None and last_z == start_z \
                         and section_length < max_delete_length:
                         remove_section = True
-                    
-                if final_g0 or line_index == len(layer_lines) - 1:
-                    remove_section = section_length < max_delete_length
-                    layer_finished = True
-                    if True:
-                        new_lines.extend(section_remove)
-                        section_remove.clear()
-                        section_keep.clear()
-                        section_length = 0.0
-                        remove_section = False
-                    else:
-                        new_lines.extend(section_keep)
+            # Handle actually removing data at the end of the layer
+            if remove_section:
+                new_lines.extend(section_nomoves)
+                layer_finished = True
+            else:
+                new_lines.extend(section_whole)
+            remove_section = False
+            section_whole.clear()
+            section_nomoves.clear()
+            section_length = 0.0
+
             data[layer_index] = "\n".join(new_lines) + "\n"
         return data
