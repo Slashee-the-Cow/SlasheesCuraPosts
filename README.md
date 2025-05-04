@@ -7,6 +7,7 @@ To install a script, in Cura, open *Help > Show Configuration Folder*, open the 
 Sometimes things bother me. Maybe sometimes things bother you too. If that's the case, why shouldn't we both benefit from my overabundance of free time?
 ***
 ## So what's available?
+**[Artificial Ceiling](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/ArtificialCeiling/ArtificialCeiling.zip?raw=true)**: Prevents the nozzle going above a certain Z height. This one I needed because I needed a Z hop to be high enough for a section but not go too high as it did the higher layers in the section.  
 **[Disable Support Retraction](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/DisableSupportRetraction/DisableSupportRetraction.zip?raw=true)**: This one was an audience request. Deletes all retractions while printing support or support interface.  
 **[Limit Support Acceleration](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/LimitSupportAcceleration/LimitSupportAcceleration.zip?raw=true)**: Allows you to set the acceleration for support sections *and* the travels before and after. I know Cura lets you set the acceleration for support sections individually, but I've been burned by support being pulled and warped as the head moves off at travel speed at the end of the section.  
 **[Support Entry/Exit Retract](https://github.com/Slashee-the-Cow/SlasheesCuraPosts/blob/main/SupportEntryExitRetract/SupportEntryExitRetract.zip?raw=true)**: Forces any move from the model to support, or support to model, to retract, regardless of distance.
